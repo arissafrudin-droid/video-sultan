@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, UploadCloud, PlayCircle, Layers, Settings, Video, Image as ImageIcon } from "lucide-react";
+import { Loader2, UploadCloud, PlayCircle, Layers, Video, Image as ImageIcon } from "lucide-react";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -33,7 +33,7 @@ export default function Home() {
       return;
     }
     if (!apiKey) {
-      alert("⚠️ Masukkan API Key Fal.ai dulu di Sidebar Kiri!");
+      alert("⚠️ Masukkan API Key Fal.ai dulu!");
       return;
     }
 
@@ -46,6 +46,7 @@ export default function Home() {
       formData.append("prompt", prompt);
       formData.append("api_key", apiKey);
 
+      // Pastikan URL ini sesuai dengan URL Backend Hugging Face lo
       const response = await fetch("https://pojokonline-api-sultan.hf.space/generate-video", {
         method: "POST",
         body: formData,
@@ -60,7 +61,7 @@ export default function Home() {
       }
     } catch (error) {
       console.error(error);
-      alert("❌ Gagal terhubung ke Backend. Pastikan terminal Python (uvicorn) NYALA!");
+      alert("❌ Gagal terhubung. Cek koneksi internet!");
     } finally {
       setLoading(false);
     }
@@ -69,24 +70,13 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-zinc-950 text-white overflow-hidden font-sans">
       
-      {/* SIDEBAR */}
+      {/* SIDEBAR (Cuma muncul di Laptop/PC) */}
       <aside className="w-64 border-r border-zinc-800 bg-zinc-900/50 p-6 flex flex-col gap-6 hidden md:flex">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 bg-red-600 rounded-lg flex items-center justify-center">
             <Video className="text-white h-5 w-5" />
           </div>
           <span className="font-bold text-xl tracking-tight">SultanVideo</span>
-        </div>
-
-        <div className="p-4 bg-zinc-900 rounded-xl border border-zinc-800">
-          <Label className="text-xs text-zinc-500 mb-2 block">API KEY (FAL.AI)</Label>
-          <Input 
-            type="password" 
-            placeholder="Paste Key di sini..." 
-            className="bg-zinc-950 border-zinc-700 h-8 text-xs text-white"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-          />
         </div>
 
         <nav className="flex flex-col gap-2">
@@ -101,7 +91,7 @@ export default function Home() {
 
       {/* MAIN CONTENT */}
       <main className="flex-1 flex overflow-hidden">
-        <div className="flex-1 p-8 overflow-y-auto">
+        <div className="flex-1 p-4 md:p-8 overflow-y-auto">
           <div className="max-w-4xl mx-auto space-y-8">
             
             <div>
@@ -121,14 +111,12 @@ export default function Home() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="relative h-40 w-full group">
-                      
                       <input 
                         type="file" 
                         accept="image/*"
                         onChange={handleFileChange}
                         className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20"
                       />
-                      
                       <div className={`absolute inset-0 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center transition-colors bg-zinc-900/50 ${file ? 'border-green-500/50 bg-green-500/10' : 'border-zinc-700 group-hover:border-red-500/50'}`}>
                         {preview ? (
                            <img src={preview} alt="Preview" className="h-full w-full object-cover rounded-lg opacity-50" />
@@ -136,7 +124,6 @@ export default function Home() {
                           <>
                             <UploadCloud className="h-10 w-10 text-zinc-500 mb-3 group-hover:text-red-500 transition-colors" />
                             <p className="text-sm text-zinc-300 font-medium">Klik Area Ini</p>
-                            <p className="text-xs text-zinc-500">JPG/PNG (Max 10MB)</p>
                           </>
                         )}
                       </div>
@@ -144,12 +131,27 @@ export default function Home() {
                   </CardContent>
                 </Card>
 
-                {/* CONFIG SECTION */}
+                {/* CONFIG SECTION (API KEY SEKARANG ADA DI SINI) */}
                 <Card className="bg-zinc-900 border-zinc-800 text-white">
                   <CardHeader>
                     <CardTitle className="text-lg">2. Configuration</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    
+                    {/* INPUT API KEY BARU (MUNCUL DI HP & LAPTOP) */}
+                    <div className="space-y-2">
+                      <Label className="text-yellow-500 font-bold">API KEY (Fal.ai)</Label>
+                      <Input 
+                        type="password" 
+                        placeholder="Paste Key fal_... di sini" 
+                        className="bg-zinc-950 border-zinc-700 text-white"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                      />
+                    </div>
+
+                    <Separator className="bg-zinc-800" />
+
                     <div className="space-y-2">
                       <Label>Visual Style</Label>
                       <Select onValueChange={(val) => {
@@ -184,7 +186,7 @@ export default function Home() {
                     >
                       {loading ? (
                         <>
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Rendering AI...
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Rendering...
                         </>
                       ) : (
                         <>
@@ -199,31 +201,18 @@ export default function Home() {
               {/* RESULT SECTION */}
               <div className="lg:col-span-2">
                 <Card className="h-full bg-zinc-900 border-zinc-800 text-white overflow-hidden flex flex-col">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <div>
-                      <CardTitle>Result Preview</CardTitle>
-                      <CardDescription className="text-zinc-500">High Definition (720p)</CardDescription>
-                    </div>
-                    <Badge variant="outline" className="border-red-500/30 text-red-400 bg-red-500/10">PRO MODEL</Badge>
+                  <CardHeader>
+                    <CardTitle>Result Preview</CardTitle>
                   </CardHeader>
-                  <Separator className="bg-zinc-800" />
-                  <CardContent className="flex-1 flex items-center justify-center p-0 min-h-[400px] bg-zinc-950 relative group">
-                    
+                  <CardContent className="flex-1 flex items-center justify-center p-0 min-h-[300px] bg-zinc-950 relative">
                     {videoUrl ? (
-                      <div className="relative w-full h-full flex items-center justify-center bg-black">
+                      <div className="relative w-full h-full flex flex-col items-center justify-center">
                         <video src={videoUrl} controls autoPlay loop className="max-w-full max-h-[500px]" />
-                        <a href={videoUrl} download target="_blank" className="absolute bottom-4 right-4 bg-white text-black px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">
-                          Download Video ⬇️
-                        </a>
+                        <a href={videoUrl} download target="_blank" className="mt-4 bg-white text-black px-6 py-2 rounded-full font-bold text-sm">Download Video ⬇️</a>
                       </div>
                     ) : (
-                      <div className="text-center space-y-3 z-10">
-                        <div className="h-20 w-20 bg-zinc-900 rounded-full flex items-center justify-center mx-auto border border-zinc-800 group-hover:scale-110 transition-transform duration-500">
-                          {loading ? <Loader2 className="h-8 w-8 text-red-500 animate-spin" /> : <Video className="h-8 w-8 text-zinc-600" />}
-                        </div>
-                        <p className="text-zinc-500 text-sm">
-                          {loading ? "Sedang membuat video... (Bisa 1-2 menit)" : "Video hasil generate akan muncul di sini"}
-                        </p>
+                      <div className="text-center text-zinc-500">
+                         {loading ? "Sabar ya, AI lagi mikir..." : "Video hasil akan muncul di sini"}
                       </div>
                     )}
                   </CardContent>
