@@ -1,0 +1,17 @@
+# Gunakan Python versi 3.9
+FROM python:3.9
+
+# Set folder kerja di dalam server
+WORKDIR /app
+
+# Copy folder backend kita ke dalam server
+COPY ./backend /app
+
+# Install bumbu-bumbu (requirements)
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+
+# Buka Port 7860 (Ini port keramat Hugging Face, bukan 8000)
+EXPOSE 7860
+
+# Nyalakan servernya
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
