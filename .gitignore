@@ -1,0 +1,12 @@
+# Sampah Python
+venv/
+__pycache__/
+*.pyc
+
+# Sampah Node.js (JANGAN SAMPAI KEBAWA!)
+frontend/node_modules/
+frontend/.next/
+
+# File Rahasia
+.env
+.DS_Store
