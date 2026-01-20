@@ -46,7 +46,7 @@ export default function Home() {
       formData.append("prompt", prompt);
       formData.append("api_key", apiKey);
 
-      const response = await fetch("http://127.0.0.1:8000/generate-video", {
+      const response = await fetch("https://pojokonline-api-sultan.hf.space/generate-video", {
         method: "POST",
         body: formData,
       });
